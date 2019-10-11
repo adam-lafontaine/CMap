@@ -4,11 +4,14 @@
 #include "win32_leak_check.h"
 #include "ctrie.h"
 
-#define NUM_TESTS 1
+#define NUM_TESTS 2
 #define RESULT_BUFFER 50
 
-bool test_create_destroy();
 void str_result(char* buffer, const char* name, const bool result);
+
+bool test_create_destroy();
+bool test_add_lookup();
+
 
 
 int main(int argc, char** argv) {
@@ -20,15 +23,16 @@ int main(int argc, char** argv) {
 	_CrtSetDbgFlag(dbgFlags);
 #endif
 
-	char results_buffer[1][RESULT_BUFFER] = { 0 };
+	char results_buffer[NUM_TESTS][RESULT_BUFFER] = { 0 };
 
 	str_result(results_buffer[0], "test_create_destroy()", test_create_destroy());
+	str_result(results_buffer[1], "test_add_lookup()", test_add_lookup());
 
-	puts("\n");
+
+	unsigned width = 30;
 
 	for (size_t i = 0; i < NUM_TESTS; ++i) {
-		puts(results_buffer[i]);
-		puts("\n");
+		printf("% *s\n", width, results_buffer[i]);
 	}
 }
 
@@ -52,6 +56,14 @@ void str_result(char* buffer, const char* name, const bool result) {
 	sprintf_s(buffer, RESULT_BUFFER, "%s: %s", name, pass_fail);
 }
 
+ctrie_value_t* make_value_copy(ctrie_value_t val) {
+	ctrie_value_t* val_ptr = (ctrie_value_t*)malloc(sizeof(ctrie_value_t));
+	if (val_ptr == NULL)
+		return NULL;
+
+	*val_ptr = val;
+}
+
 bool test_create_destroy() {
 	puts("test_create_destroy():");
 
@@ -67,5 +79,31 @@ bool test_create_destroy() {
 	ctrie_destroy(map);
 	print_sub("destroy ok", level);
 
+	puts("\n");
 	return c_result;
+}
+
+bool test_add_lookup() {
+	puts("test_add_lookup():");
+
+	ctrie* map = ctrie_create();
+
+	char* key = "0110";
+	ctrie_value_t val = 42.0;
+	ctrie_value_t* value = make_value_copy(val);
+
+	ctrie_add(map, key, value);
+
+	ctrie_value_t* ptr = ctrie_lookup(map, key);
+
+	bool result = true;
+	if(result = (*ptr == val))
+		print_sub("add and lookup ok\n", 1);
+	else
+		print_sub("add and lookup failed\n", 1);
+
+	ctrie_destroy(map);
+
+	puts("\n");
+	return result;
 }
