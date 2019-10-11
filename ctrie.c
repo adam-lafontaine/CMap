@@ -86,7 +86,7 @@ void add_child_node(ct_node* node, size_t index) {
 ct_node* lookup_node(ct_node* node, char* s) {
 	while (*s != '\0') {
 		size_t idx = c_idx(s++);
-		if (!has_child(node, idx))
+		if (!has_child_node(node, idx))
 			return NULL;
 
 		node = node->child[idx];
@@ -161,7 +161,7 @@ void ctrie_remove(ctrie* map, char* s) {
 	}
 }
 
-ctrie_value_t* lookup(ctrie* map, char* s) {
+ctrie_value_t* ctrie_lookup(ctrie* map, char* s) {
 	ct_node* node = lookup_node(map->root, s);
 	if (node == NULL)
 		return NULL;
