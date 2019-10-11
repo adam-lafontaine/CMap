@@ -54,9 +54,25 @@ void destroy_node(ct_node* node) {
 	free(node);
 }
 
-bool has_child(ct_node* node, size_t index){
+bool has_child_node(ct_node* node, size_t index){
 	return node->child[index] != NULL;
 }
+
+bool is_empty_node(ct_node* node) {
+	if (node->value != NULL)
+		return false;
+
+	for (size_t i = 0; i < CTRIE_KEY_LENGTH; ++i)
+		if (node->child[i] != NULL)
+			return false;
+
+	return true;
+}
+
+bool is_root_node(ct_node* node) {
+	return node->parent == NULL;
+}
+
 
 void add_child_node(ct_node* node, size_t index) {
 	ct_node* child = create_node();
@@ -65,6 +81,18 @@ void add_child_node(ct_node* node, size_t index) {
 	destroy_node(node->child[index]);		
 
 	node->child[index] = child;
+}
+
+ct_node* lookup_node(ct_node* node, char* s) {
+	while (*s != '\0') {
+		size_t idx = c_idx(s++);
+		if (!has_child(node, idx))
+			return NULL;
+
+		node = node->child[idx];
+	}
+
+	return node;
 }
 
 
@@ -108,7 +136,7 @@ void ctrie_add(ctrie* map, char* s, ctrie_value_t* value) {
 
 	while (*s != '\0') {
 		size_t idx = c_idx(s++);
-		if (!has_child(node, idx))
+		if (!has_child_node(node, idx))
 			add_child_node(node, idx);
 
 		node = node->child[idx];
@@ -117,8 +145,28 @@ void ctrie_add(ctrie* map, char* s, ctrie_value_t* value) {
 	node->value = value;
 }
 
-void ctrie_remove(ctrie* map, char* word) {
+void ctrie_remove(ctrie* map, char* s) {
+	ct_node* node = lookup_node(map->root, s);
+	if (node == NULL)
+		return;
+	
+	free(node->value);
+	
+	while (!is_root_node(node)) {
+		node = node->parent;
 
+		for(size_t i = 0; i < CTRIE_KEY_LENGTH; ++i)
+			if (is_empty_node(node->child[i]))
+				destroy_node(node->child[i]);
+	}
+}
+
+ctrie_value_t* lookup(ctrie* map, char* s) {
+	ct_node* node = lookup_node(map->root, s);
+	if (node == NULL)
+		return NULL;
+
+	return node->value;
 }
 
 //======= TESTING FUNCTIONS ================

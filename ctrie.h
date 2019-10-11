@@ -11,9 +11,11 @@ ctrie* ctrie_create();
 
 void ctrie_destroy(ctrie* map);
 
-void ctrie_add(ctrie* map, char* word, ctrie_value_t* value);
+void ctrie_add(ctrie* map, char* s, ctrie_value_t* value);
 
-void ctrie_remove(ctrie* map, char* word);
+void ctrie_remove(ctrie* map, char* s);
+
+ctrie_value_t* lookup(ctrie* map, char* s);
 
 
 //======= TESTING FUNCTIONS ================
