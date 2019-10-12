@@ -25,6 +25,7 @@ int main(int argc, char** argv) {
 
 	str_result(results_buffer[0], "test_create_destroy()", test_create_destroy());
 	str_result(results_buffer[1], "test_add_lookup()", test_add_lookup());
+	str_result(results_buffer[2], "test_add()", test_add());
 
 	unsigned width = 0;
 	unsigned w;
@@ -35,6 +36,7 @@ int main(int argc, char** argv) {
 			width = w;
 	}
 
+	puts("\n");
 	for (size_t i = 0; i < num_tests; ++i) {
 		printf("% *s\n", width, results_buffer[i]);
 	}
@@ -43,10 +45,7 @@ int main(int argc, char** argv) {
 //==========================================
 
 
-void print_sub(const char* msg, unsigned level) {
-	printf("%*s%s", 
-		level, " ", msg);
-}
+
 
 void str_result(char* buffer, const char* name, const bool result) {
 	char pass_fail[10];
