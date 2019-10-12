@@ -140,6 +140,56 @@ bool test_remove() {
 	return add_result & remove_result;
 }
 
+bool test_re_add() {
+	puts("\ntest_re_add():");
+	ctrie* map = ctrie_create();
+
+	const char* keys[] = { "wabce", "xyzt", "lmopq" };
+	const ctrie_value_t values[] = { 25, -5, 36 };
+	for (size_t i = 0; i < 3; ++i)
+		ctrie_add(map, keys[i], values[i]);
+
+	bool add_result = true;
+	for (size_t i = 0; i < 3; ++i)
+		add_result &= (ctrie_lookup(map, keys[i]) == values[i]);
+
+	if (add_result)
+		print_sub("add ok\n", 1);
+	else
+		print_sub("add failed\n", 1);
+
+	for (size_t i = 0; i < 3; ++i)
+		ctrie_remove(map, keys[i]);
+
+	bool remove_result = true;
+	for (size_t i = 0; i < 3; ++i)
+		remove_result &= ctrie_lookup(map, keys[i]) == NULL;
+
+	ctrie_value_t val;
+	for (size_t i = 0; i < 3; ++i)
+		val = ctrie_lookup(map, keys[i]);
+
+	if (remove_result)
+		print_sub("remove ok\n", 1);
+	else
+		print_sub("remove failed\n", 1);
+
+	bool re_add_result = true;
+	for (size_t i = 0; i < 3; ++i)
+		ctrie_add(map, keys[i], values[i]);
+
+	for (size_t i = 0; i < 3; ++i)
+		re_add_result &= (ctrie_lookup(map, keys[i]) == values[i]);
+
+	if (re_add_result)
+		print_sub("re-add ok\n", 1);
+	else
+		print_sub("re-add failed\n", 1);
+
+	ctrie_destroy(map);
+	return add_result & remove_result && re_add_result;
+}
+
 /*
 
 bool test_add() {

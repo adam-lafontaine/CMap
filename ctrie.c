@@ -9,6 +9,7 @@ struct ctrie_node_t;
 typedef struct ctrie_node_t ct_node;
 
 typedef struct ctrie_node_t {
+	size_t id;
 	ct_node* child[CTRIE_KEY_LENGTH];
 	ct_node* parent;
 	ctrie_value_t value;
@@ -28,12 +29,13 @@ void clear_value(ct_node* node) {
 }
 
 
-ct_node* create_node() {
+ct_node* create_node(const size_t id) {
 	ct_node* node = (ct_node*)malloc(sizeof(ct_node));
 
 	if (node == NULL)
 		return NULL;
 
+	node->id = id;
 	node->parent = NULL;
 	clear_value(node);
 
@@ -57,7 +59,6 @@ void destroy_node(ct_node* node) {
 	node->parent = NULL;
 
 	free(node);
-	node = NULL;
 }
 
 bool has_child_node(const ct_node* node, size_t index){
@@ -65,13 +66,8 @@ bool has_child_node(const ct_node* node, size_t index){
 }
 
 bool is_empty_node(const ct_node* node) {
-	if (node == NULL)
+	if (node == NULL || node->value != NULL)
 		return false;
-
-#ifdef CTRIE_VALUE_IS_PTR
-	if (node->value != NULL)
-		return false;
-#endif
 
 	for (size_t i = 0; i < CTRIE_KEY_LENGTH; ++i) {
 		if (node->child[i] != NULL)
@@ -87,7 +83,7 @@ bool is_root_node(const ct_node* node) {
 
 
 void add_child_node(ct_node* node, size_t index) {
-	ct_node* child = create_node();
+	ct_node* child = create_node(index);
 	child->parent = node;
 
 	destroy_node(node->child[index]);		
@@ -129,7 +125,7 @@ ctrie* ctrie_create() {
 	if (map == NULL)
 		return NULL;
 
-	map->root = create_node();
+	map->root = create_node(0);
 	if (map->root == NULL) {
 		free(map);
 		return NULL;
@@ -146,7 +142,6 @@ void ctrie_destroy(ctrie* map) {
 	destroy_node(map->root);
 
 	free(map);
-	map = NULL;
 }
 
 
@@ -179,14 +174,16 @@ void ctrie_remove(ctrie* map, const char* key) {
 	
 	clear_value(node);
 	
-	/*while (!is_root_node(node)) {
+	// cleanup
+	while (!is_root_node(node)) {
+		size_t child_id = node->id;
 		node = node->parent;
 
-		for (size_t i = 0; i < CTRIE_KEY_LENGTH; ++i) {
-			if (node->child[i] != NULL && is_empty_node(node->child[i]))
-				destroy_node(node->child[i]);
-		}
-	}*/
+		if (is_empty_node(node->child[child_id])) {
+			destroy_node(node->child[child_id]);
+			node->child[child_id] = NULL;
+		}			
+	}
 }
 
 ctrie_value_t ctrie_lookup(const ctrie* map, const char* s) {

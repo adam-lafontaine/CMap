@@ -13,6 +13,8 @@ bool test_add();
 
 bool test_remove();
 
+bool test_re_add();
+
 
 
 #endif // __CTRIE_TEST_H__
