@@ -28,6 +28,7 @@ int main(int argc, char** argv) {
 	str_result(results_buffer[2], "test_add()", test_add());
 	str_result(results_buffer[3], "test_remove()", test_remove());
 	str_result(results_buffer[4], "test_re_add()", test_re_add());
+	str_result(results_buffer[5], "test_get()", test_get());
 
 	unsigned width = 0;
 	unsigned w;

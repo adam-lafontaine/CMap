@@ -15,6 +15,8 @@ bool test_remove();
 
 bool test_re_add();
 
+bool test_get();
+
 
 
 #endif // __CTRIE_TEST_H__

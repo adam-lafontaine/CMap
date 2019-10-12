@@ -190,6 +190,46 @@ bool test_re_add() {
 	return add_result & remove_result && re_add_result;
 }
 
+bool test_get() {
+	puts("\ntest_get():");
+	ctrie* map = ctrie_create();
+
+	const char* keys[] = { "wabce", "xyzt", "lmopq" };
+	const ctrie_value_t values[] = { 25, -5, 36 };
+	for (size_t i = 0; i < 3; ++i)
+		ctrie_add(map, keys[i], values[i]);
+
+	bool add_result = true;
+	for (size_t i = 0; i < 3; ++i)
+		add_result &= (ctrie_lookup(map, keys[i]) == values[i]);
+
+	if (add_result)
+		print_sub("add ok\n", 1);
+	else
+		print_sub("add failed\n", 1);
+
+	bool key_result = true;
+	bool value_result = true;
+	for (size_t i = 0; i < 3; ++i) {
+		ctrie_pair* pair = ctrie_get(map, keys[i]);
+		key_result &= strcmp(pair->key, keys[i]) == 0;
+		value_result &= pair->value == values[i];
+	}
+
+	if (key_result)
+		print_sub("get key ok\n", 1);
+	else
+		print_sub("get key failed\n", 1);
+
+	if (value_result)
+		print_sub("get value ok\n", 1);
+	else
+		print_sub("get value failed\n", 1);
+
+	ctrie_destroy(map);
+	return add_result && key_result && value_result;
+}
+
 /*
 
 bool test_add() {
