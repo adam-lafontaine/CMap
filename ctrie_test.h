@@ -11,6 +11,8 @@ bool test_add_lookup();
 
 bool test_add();
 
+bool test_remove();
+
 
 
 #endif // __CTRIE_TEST_H__

@@ -4,6 +4,7 @@
 
 //======= HELPERS ==============================
 
+// used for making values of different types
 ctrie_value_t* make_value(ctrie_value_t val) {
 	ctrie_value_t* val_ptr = (ctrie_value_t*)malloc(sizeof(ctrie_value_t));
 	if (val_ptr == NULL)
@@ -105,10 +106,44 @@ bool test_add() {
 	return valid_result && long_result&& invalid_result;
 }
 
+bool test_remove() {
+	puts("\ntest_remove():");
+	ctrie* map = ctrie_create();
+
+	const char* keys[] = { "wabce", "xyzt", "lmopq" };
+	const ctrie_value_t values[] = { 25, -5, 36 };
+	for (size_t i = 0; i < 3; ++i)
+		ctrie_add(map, keys[i], values[i]);
+
+	bool add_result = true;
+	for (size_t i = 0; i < 3; ++i)
+		add_result &= (ctrie_lookup(map, keys[i]) == values[i]);
+
+	if (add_result)
+		print_sub("add ok\n", 1);
+	else
+		print_sub("add failed\n", 1);
+
+	for (size_t i = 0; i < 3; ++i)
+		ctrie_remove(map, keys[i]);
+
+	bool remove_result = true;
+	for (size_t i = 0; i < 3; ++i)
+		remove_result &= ctrie_lookup(map, keys[i]) == NULL;
+
+	if (remove_result)
+		print_sub("remove ok\n", 1);
+	else
+		print_sub("remove failed\n", 1);
+
+	ctrie_destroy(map);
+	return add_result & remove_result;
+}
+
 /*
 
 bool test_add() {
-	puts("test_add():");
+	puts("\ntest_add():");
 	bool result = true;
 	ctrie* map = ctrie_create();
 

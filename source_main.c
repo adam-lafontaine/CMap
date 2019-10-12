@@ -26,6 +26,7 @@ int main(int argc, char** argv) {
 	str_result(results_buffer[0], "test_create_destroy()", test_create_destroy());
 	str_result(results_buffer[1], "test_add_lookup()", test_add_lookup());
 	str_result(results_buffer[2], "test_add()", test_add());
+	str_result(results_buffer[3], "test_remove()", test_remove());
 
 	unsigned width = 0;
 	unsigned w;
