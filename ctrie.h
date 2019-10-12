@@ -24,6 +24,7 @@ void ctrie_remove(ctrie* map, const char* key);
 
 ctrie_pair* ctrie_get(ctrie* map, const char* key);
 
+ctrie_pair* ctrie_next(ctrie* map, const char* key);
 
 
 #endif // !__CTRIE_H__
