@@ -3,15 +3,7 @@
 
 #include "ctrie.h"
 
-static const char KEY_CHARS[] = "01";
 
-#define CTRIE_KEY_LENGTH sizeof(KEY_CHARS)
-
-//======= HELPERS ===========================
-
-size_t c_idx(char* c) {
-	return *c - '0';
-}
 
 
 

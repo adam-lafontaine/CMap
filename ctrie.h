@@ -1,11 +1,11 @@
 #ifndef __CTRIE_H__
 #define __CTRIE_H__
 
-//#define CTRIE_KEY_LENGTH 2
+#include "ctrie_config.h"
 
 struct ctrie_t;
 typedef struct ctrie_t ctrie;
-typedef int ctrie_value_t;
+
 
 ctrie* ctrie_create();
 
