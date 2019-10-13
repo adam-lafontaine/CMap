@@ -25,10 +25,12 @@ int main(int argc, char** argv) {
 
 	str_result(results_buffer[0], "test_create_destroy()", test_create_destroy());
 	str_result(results_buffer[1], "test_add_lookup()", test_add_lookup());
-	str_result(results_buffer[2], "test_add()", test_add());
+	str_result(results_buffer[2], "test_add()", test_add());	
 	str_result(results_buffer[3], "test_remove()", test_remove());
 	str_result(results_buffer[4], "test_re_add()", test_re_add());
 	str_result(results_buffer[5], "test_get()", test_get());
+	str_result(results_buffer[6], "test_get_first()", test_get_first());
+	str_result(results_buffer[7], "test_get_next()", test_get_next());
 
 	unsigned width = 0;
 	unsigned w;

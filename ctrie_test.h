@@ -17,6 +17,10 @@ bool test_re_add();
 
 bool test_get();
 
+bool test_get_first();
+
+bool test_get_next();
+
 
 
 #endif // __CTRIE_TEST_H__

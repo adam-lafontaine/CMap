@@ -230,6 +230,115 @@ bool test_get() {
 	return add_result && key_result && value_result;
 }
 
+
+bool test_get_first() {
+	puts("\ntest_get_first():");
+	ctrie* map = ctrie_create();
+
+	const char* key1 = "adam";
+	const char* key2 = "gary";
+	const char* key3 = "peter";
+
+	ctrie_value_t val1 = 89;
+	ctrie_value_t val2 = -5874;
+	ctrie_value_t val3 = 42;
+
+	bool empty_res = ctrie_get_first(map) == NULL;
+	if (empty_res)
+		print_sub("empty ok\n", 1);
+	else
+		print_sub("empty failed\n", 1);
+
+	ctrie_add(map, key3, val3);
+	ctrie_add(map, key1, val1);
+	ctrie_add(map, key2, val2);
+	
+	ctrie_pair* pair = ctrie_get_first(map);
+	bool first_res = pair != NULL && strcmp(pair->key, key1) == 0 && pair->value == val1;
+	if (first_res)
+		print_sub("first ok\n", 1);
+	else
+		print_sub("first failed\n", 1);
+
+	ctrie_remove(map, key1);
+	pair = ctrie_get_first(map);
+	bool remove_res = pair != NULL && strcmp(pair->key, key2) == 0 && pair->value == val2;
+	if (remove_res)
+		print_sub("remove ok\n", 1);
+	else
+		print_sub("remove failed\n", 1);
+
+	ctrie_remove(map, key2);
+	ctrie_remove(map, key3);
+	bool remove_all_res = ctrie_get_first(map) == NULL;
+	if (remove_all_res)
+		print_sub("remove all ok\n", 1);
+	else
+		print_sub("remove all failed\n", 1);
+
+	ctrie_destroy(map);
+	return empty_res && first_res;
+}
+
+
+bool test_get_next() {
+	puts("\ntest_get_next():");
+	ctrie* map = ctrie_create();
+
+	const char* key1 = "adam";
+	const char* key2 = "gary";
+	const char* key3 = "peter";
+
+	ctrie_value_t val1 = 89;
+	ctrie_value_t val2 = -5874;
+	ctrie_value_t val3 = 42;
+
+	ctrie_add(map, key3, val3);
+	ctrie_add(map, key1, val1);
+	ctrie_add(map, key2, val2);
+
+	ctrie_pair* first = ctrie_get_first(map);
+	
+	ctrie_pair* second = ctrie_get_next(map, first->key);
+	bool res_1 = second != NULL && strcmp(second->key, key2) == 0 && second->value == val2;
+	if (res_1)
+		print_sub("first ok\n", 1);
+	else
+		print_sub("first failed\n", 1);
+
+	ctrie_pair* third = ctrie_get_next(map, second->key);
+	bool res_2 = third != NULL && strcmp(third->key, key3) == 0 && third->value == val3;
+	if (res_2)
+		print_sub("second ok\n", 1);
+	else
+		print_sub("second failed\n", 1);
+
+	bool res_last = ctrie_get_next(map, third->key) == NULL;
+	if (res_2)
+		print_sub("last ok\n", 1);
+	else
+		print_sub("last failed\n", 1);
+
+	ctrie_remove(map, key2);
+	ctrie_pair* new_second = ctrie_get_next(map, first->key);
+	bool res_remove = new_second != NULL && strcmp(new_second->key, key3) == 0 && new_second->value == val3;
+	if (res_remove)
+		print_sub("remove ok\n", 1);
+	else
+		print_sub("remove failed\n", 1);
+
+	ctrie_remove(map, key1);
+	ctrie_remove(map, key3);
+	bool res_all = ctrie_get_next(map, key1) == NULL;
+	if (res_all)
+		print_sub("remove all ok\n", 1);
+	else
+		print_sub("remove all failed\n", 1);
+
+	ctrie_destroy(map);
+	return res_1 && res_2 && res_last && res_remove && res_all;
+}
+
 /*
 
 bool test_add() {
