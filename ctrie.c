@@ -25,7 +25,6 @@ typedef struct ctrie_node_t {
 	ct_node* parent;
 
 	ctrie_pair* pair;
-	//ctrie_value_t value;
 };
 
 
