@@ -139,6 +139,9 @@ ct_node* lookup_node(const ct_node* node, char* s) {
 
 ct_node* next_child(ct_node* node) {
 
+	if (node->pair != NULL)
+		return node;
+
 	for (size_t id = 0; id < CTRIE_KEY_LENGTH; ++id) {
 		if (node->child[id] != NULL)
 			return next_child(node->child[id]);

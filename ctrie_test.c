@@ -340,10 +340,6 @@ bool test_get_next() {
 	return res_1 && res_2 && res_last && res_remove && res_all;
 }
 
-bool test_get_similar() {
-
-}
-
 
 bool test_iterate() {
 	puts("\ntest_iterate():");
@@ -361,7 +357,7 @@ bool test_iterate() {
 	bool key_result = true;
 	bool val_result = true;
 	int i = 0;
-	for (ctrie_pair* pair = ctrie_get_first(map); pair != NULL; pair = ctrie_get_next(map, pair->key)) {
+	for (ctrie_pair* pair = ctrie_get_first(map); pair != NULL; pair = ctrie_get_next(map, pair->key), ++i) {
 		key_result &= strcmp(pair->key, keys[i]) == 0;
 		val_result &= pair->value == i;
 	}
