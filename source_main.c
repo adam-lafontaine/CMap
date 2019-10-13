@@ -31,6 +31,7 @@ int main(int argc, char** argv) {
 	str_result(results_buffer[5], "test_get()", test_get());
 	str_result(results_buffer[6], "test_get_first()", test_get_first());
 	str_result(results_buffer[7], "test_get_next()", test_get_next());
+	str_result(results_buffer[8], "test_iterate()", test_iterate());
 
 	unsigned width = 0;
 	unsigned w;

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "ctrie_test.h"
 
@@ -337,6 +338,46 @@ bool test_get_next() {
 
 	ctrie_destroy(map);
 	return res_1 && res_2 && res_last && res_remove && res_all;
+}
+
+bool test_get_similar() {
+
+}
+
+
+bool test_iterate() {
+	puts("\ntest_iterate():");
+	ctrie* map = ctrie_create();
+
+	char keys[][20] = { 
+		"ioefkasdjj", "wertyu", "lkjhg", "cvbnnm", "okmijnuhbygv",
+		"asdfg", "lkjhgf", "asdfghjkl", "qwsdewq", "okmnjiuhjkouiy"
+	};
+	qsort(keys, 10, sizeof keys[0], strcmp);
+
+	for (int i = 0; i < 10; ++i)
+		ctrie_add(map, keys[i], i);
+
+	bool key_result = true;
+	bool val_result = true;
+	int i = 0;
+	for (ctrie_pair* pair = ctrie_get_first(map); pair != NULL; pair = ctrie_get_next(map, pair->key)) {
+		key_result &= strcmp(pair->key, keys[i]) == 0;
+		val_result &= pair->value == i;
+	}
+
+	if (key_result)
+		print_sub("keys ok\n", 1);
+	else
+		print_sub("keys failed\n", 1);
+
+	if (val_result)
+		print_sub("values ok\n", 1);
+	else
+		print_sub("values failed\n", 1);
+
+	ctrie_destroy(map);
+	return key_result && val_result;
 }
 
 /*

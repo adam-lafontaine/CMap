@@ -228,8 +228,7 @@ void ctrie_add(ctrie* map, const char* key, const ctrie_value_t value) {
 
 	node->pair = pair;
 	node->pair->key = key;
-	node->pair->value = value;
-	
+	node->pair->value = value;	
 }
 
 void ctrie_remove(ctrie* map, const char* key) {

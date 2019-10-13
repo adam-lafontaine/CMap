@@ -21,6 +21,8 @@ bool test_get_first();
 
 bool test_get_next();
 
+bool test_iterate();
+
 
 
 #endif // __CTRIE_TEST_H__
