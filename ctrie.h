@@ -6,21 +6,28 @@
 struct ctrie_t;
 typedef struct ctrie_t ctrie;
 
+typedef struct ctrie_pair_t {
+	char* key;
+	ctrie_value_t value;
+} ctrie_pair;
+
 
 ctrie* ctrie_create();
 
 void ctrie_destroy(ctrie* map);
 
-void ctrie_add(ctrie* map, char* key, ctrie_value_t* value);
+void ctrie_add(ctrie* map, const char* key, const ctrie_value_t value);
 
-void ctrie_remove(ctrie* map, char* s);
+ctrie_value_t ctrie_lookup(const ctrie* map, const char* key);
 
-ctrie_value_t* ctrie_lookup(ctrie* map, char* s);
+void ctrie_remove(ctrie* map, const char* key);
 
+ctrie_pair* ctrie_get(ctrie* map, const char* key);
 
-//======= TESTING FUNCTIONS ================
-size_t ctrie_test_value(ctrie* map);
-ctrie* ctrie_create_test();
+ctrie_pair* ctrie_get_first(ctrie* map);
+
+ctrie_pair* ctrie_get_next(ctrie* map, const char* key);
+
 
 
 #endif // !__CTRIE_H__

@@ -3,27 +3,69 @@
 
 #include "ctrie.h"
 
-
-
-
-
 //======= NODE ==============================
 
+struct ctrie_node_t;
+typedef struct ctrie_node_t ct_node;
+
+ctrie_pair* create_pair(ctrie* map, const char* key) {	
+
+	ctrie_pair* pair = (ctrie_pair*)malloc(sizeof(ctrie_pair));
+	if (pair == NULL)
+		return NULL;
+
+	pair->key = key;
+
+	return pair;
+}
+
 typedef struct ctrie_node_t {
-	ctrie* child[CTRIE_KEY_LENGTH];
-	ctrie* parent;
-	ctrie_value_t* value;
-} ct_node;
+	size_t id;
+	ct_node* child[CTRIE_KEY_LENGTH];
+	ct_node* parent;
+
+	ctrie_pair* pair;
+};
 
 
-ct_node* create_node() {
+void clear_value(ct_node* node) {
+#ifdef CTRIE_VALUE_IS_PTR
+
+	if (node->value != NULL) {
+		free(node->pair->value);
+	}
+
+#endif // !CTRIE_VALUE_IS_PTR
+
+	free(node->pair);
+	node->pair = NULL;
+}
+
+void destroy_pair(ctrie_pair* pair) {
+	if (pair == NULL)
+		return;
+
+#ifdef CTRIE_VALUE_IS_PTR
+
+	if (value != NULL) {
+		free(pair->value);
+	}
+
+#endif // !CTRIE_VALUE_IS_PTR
+
+	free(pair);
+}
+
+
+ct_node* create_node(const size_t id) {
 	ct_node* node = (ct_node*)malloc(sizeof(ct_node));
 
 	if (node == NULL)
 		return NULL;
 
+	node->id = id;
 	node->parent = NULL;
-	node->value = NULL;
+	node->pair = NULL;	
 
 	size_t i = 0;
 	while (i < CTRIE_KEY_LENGTH)
@@ -36,38 +78,43 @@ void destroy_node(ct_node* node) {
 	if (node == NULL)
 		return;
 
-	for (size_t i = 0; i < CTRIE_KEY_LENGTH; ++i)
-		if (node->child[i] != NULL)
+	for (size_t i = 0; i < CTRIE_KEY_LENGTH; ++i) {
+		if (node->child[i] != NULL) {
 			destroy_node(node->child[i]);
+			node->child[i] = NULL;
+		}
+	}
 
-	if (node->value != NULL)
-		free(node->value);
+	if (node->pair != NULL) {
+		destroy_pair(node->pair);
+		node->pair = NULL;
+	}
+	
+	node->parent = NULL;
 
 	free(node);
 }
 
-bool has_child_node(ct_node* node, size_t index){
-	return node->child[index] != NULL;
-}
 
-bool is_empty_node(ct_node* node) {
-	if (node->value != NULL)
+bool is_empty_node(const ct_node* node) {
+	if (node->pair != NULL)
 		return false;
 
-	for (size_t i = 0; i < CTRIE_KEY_LENGTH; ++i)
+	for (size_t i = 0; i < CTRIE_KEY_LENGTH; ++i) {
 		if (node->child[i] != NULL)
 			return false;
+	}
 
 	return true;
 }
 
-bool is_root_node(ct_node* node) {
+bool is_root_node(const ct_node* node) {
 	return node->parent == NULL;
 }
 
 
 void add_child_node(ct_node* node, size_t index) {
-	ct_node* child = create_node();
+	ct_node* child = create_node(index);
 	child->parent = node;
 
 	destroy_node(node->child[index]);		
@@ -75,23 +122,55 @@ void add_child_node(ct_node* node, size_t index) {
 	node->child[index] = child;
 }
 
-ct_node* lookup_node(ct_node* node, char* s) {
+ct_node* lookup_node(const ct_node* node, char* s) {
+	ct_node* found = node;
+
 	while (*s != '\0') {
 		size_t idx = c_idx(s++);
-		if (!has_child_node(node, idx))
+		if (found->child[idx] == NULL)
 			return NULL;
 
-		node = node->child[idx];
+		found = found->child[idx];
+	}
+
+	return found;
+}
+
+ct_node* next_child(ct_node* node) {
+
+	if (node->pair != NULL)
+		return node;
+
+	for (size_t id = 0; id < CTRIE_KEY_LENGTH; ++id) {
+		if (node->child[id] != NULL)
+			return next_child(node->child[id]);
 	}
 
 	return node;
 }
 
+ct_node* next_node(ct_node* node, size_t id) {
+	if (id > CTRIE_KEY_LENGTH - 1 || node == NULL)
+		return NULL;
 
-//===== PUBLIC ==================================
+	for (; id < CTRIE_KEY_LENGTH; ++id) {
+		if (node->child[id] != NULL)
+			return next_child(node->child[id]);
+	}
+
+	return next_node(node->parent, node->id + 1);
+}
+
+//======= HELPERS =================================
+
+bool is_valid_char(const char c) {
+	return strchr(KEY_CHARS, c) != NULL;
+}
+
+
+//======= PUBLIC ==================================
 
 struct ctrie_t {
-
 	ct_node* root;
 };
 
@@ -102,7 +181,7 @@ ctrie* ctrie_create() {
 	if (map == NULL)
 		return NULL;
 
-	map->root = create_node();
+	map->root = create_node(0);
 	if (map->root == NULL) {
 		free(map);
 		return NULL;
@@ -122,65 +201,90 @@ void ctrie_destroy(ctrie* map) {
 }
 
 
-void ctrie_add(ctrie* map, char* s, ctrie_value_t* value) {
+void ctrie_add(ctrie* map, const char* key, const ctrie_value_t value) {
+	char* c = key;
+
+	while (*c != '\0') {
+		if (!is_valid_char(*c++))
+			return;
+	}
 
 	ct_node* node = map->root;
+	c = key;
 
-	while (*s != '\0') {
-		size_t idx = c_idx(s++);
-		if (!has_child_node(node, idx))
+	while (*c != '\0') {
+		size_t idx = c_idx(c++);
+		if (node->child[idx] == NULL)
 			add_child_node(node, idx);
 
 		node = node->child[idx];
 	}
 
-	node->value = value;
+	if (node == NULL)
+		return;
+
+	ctrie_pair* pair = (ctrie_pair*)malloc(sizeof(ctrie_pair));
+	if (pair == NULL) {
+		return;
+	}	
+
+	node->pair = pair;
+	node->pair->key = key;
+	node->pair->value = value;	
 }
 
-void ctrie_remove(ctrie* map, char* s) {
-	ct_node* node = lookup_node(map->root, s);
+void ctrie_remove(ctrie* map, const char* key) {
+	ct_node* node = lookup_node(map->root, key);
 	if (node == NULL)
 		return;
 	
-	free(node->value);
+	clear_value(node);
 	
+	// cleanup
 	while (!is_root_node(node)) {
+		size_t child_id = node->id;
 		node = node->parent;
 
-		for(size_t i = 0; i < CTRIE_KEY_LENGTH; ++i)
-			if (is_empty_node(node->child[i]))
-				destroy_node(node->child[i]);
+		if (is_empty_node(node->child[child_id])) {
+			destroy_node(node->child[child_id]);
+			node->child[child_id] = NULL;
+		}			
 	}
 }
 
-ctrie_value_t* ctrie_lookup(ctrie* map, char* s) {
-	ct_node* node = lookup_node(map->root, s);
+ctrie_value_t ctrie_lookup(const ctrie* map, const char* key) {
+	ct_node* node = lookup_node(map->root, key);
 	if (node == NULL)
 		return NULL;
 
-	return node->value;
+	return node->pair->value;
 }
 
-//======= TESTING FUNCTIONS ================
+ctrie_pair* ctrie_get(ctrie* map, const char* key) {
+	ct_node* node = lookup_node(map->root, key);
+	if (node == NULL)
+		return NULL;
 
-ctrie* ctrie_create_test() {
-	ctrie* map = ctrie_create();
-
-	map->root->value = (ctrie_value_t*)malloc(sizeof(ctrie_value_t));
-	if (map->root->value != NULL)
-		*map->root->value = 2;
-
-	size_t i = 0;
-	while (i < CTRIE_KEY_LENGTH) {
-		ct_node* node = (map->root->child[i++] = create_node());
-		node->value = (ctrie_value_t*)malloc(sizeof(ctrie_value_t));
-		if (node->value != NULL)
-			*node->value = 42;		
-	}		
-
-	return map;
+	return node->pair;
 }
 
-size_t ctrie_test_value(ctrie* map) {
-	return sizeof(map->root->child);
+ctrie_pair* ctrie_get_next(ctrie* map, const char* key) {
+	ct_node* node = lookup_node(map->root, key);
+	if (node == NULL)
+		return NULL;
+
+	ct_node* next = next_node(node, 0);
+	if (next == NULL)
+		return NULL;
+
+	return next->pair;
+}
+
+
+ctrie_pair* ctrie_get_first(ctrie* map) {
+	ct_node* node = next_child(map->root);
+	if (node == NULL)
+		return NULL;
+
+	return node->pair;
 }

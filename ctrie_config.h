@@ -7,6 +7,9 @@ static const char KEY_CHARS[] = "abcdefghijklmnopqrstuvwxyz";
 // define value type
 typedef int ctrie_value_t;
 
+// define if value type is a pointer to enable proper memory cleanup
+//#define CTRIE_VALUE_IS_PTR
+
 // do not touch
 #define CTRIE_KEY_LENGTH sizeof KEY_CHARS 
 
