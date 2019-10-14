@@ -2,7 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_WIN32)
 #include "win32_leak_check.h"
+#endif
+
+//#define TEST_FOR_LEAKS
+
 #include "cmap_test.h"
 
 #define MAX_TESTS 20
@@ -15,7 +20,7 @@ void str_result(char* buffer, const char* name, const bool result);
 
 
 int main(int argc, char** argv) {
-#if defined(_DEBUG)
+#if defined(_WIN32) && defined(_DEBUG) && defined(TEST_FOR_LEAKS)
 	int dbgFlags = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
 	dbgFlags |= _CRTDBG_CHECK_ALWAYS_DF;   // check block integrity
 	dbgFlags |= _CRTDBG_DELAY_FREE_MEM_DF; // don't recycle memory
@@ -57,7 +62,6 @@ int main(int argc, char** argv) {
 
 void str_result(char* buffer, const char* name, const bool result) {
 	char pass_fail[10];
-	//memset(pass_fail, 0, 100);
 
 	if (result)
 		sprintf_s(pass_fail, 10, "%s", "Pass");

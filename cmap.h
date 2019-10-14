@@ -3,7 +3,8 @@
 
 #include "cmap_config.h"
 
-// define value type
+// declare value type
+// define where implemented
 typedef cmap_value_t;
 
 struct cmap_t;
