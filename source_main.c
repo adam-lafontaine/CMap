@@ -3,10 +3,12 @@
 #include <string.h>
 
 #include "win32_leak_check.h"
-#include "ctrie_test.h"
+#include "cmap_test.h"
 
 #define MAX_TESTS 20
 #define RESULT_BUFFER_SZ 50
+
+
 
 void str_result(char* buffer, const char* name, const bool result);
 
@@ -42,7 +44,7 @@ int main(int argc, char** argv) {
 			width = w;
 	}
 
-	puts("\n");
+	puts("\n\nTest Summary:\n");
 	for (size_t i = 0; i < num_tests; ++i) {
 		printf("% *s\n", width, results_buffer[i]);
 	}

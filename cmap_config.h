@@ -1,21 +1,18 @@
-#ifndef __CTRIE_CONFIG_H__
-#define __CTRIE_CONFIG_H__
+#ifndef __CMAP_CONFIG_H__
+#define __CMAP_CONFIG_H__
 
 // include desired character options for string keys
 static const char KEY_CHARS[] = "abcdefghijklmnopqrstuvwxyz";
 
-// define value type
-typedef int ctrie_value_t;
-
 // define if value type is a pointer to enable proper memory cleanup
-//#define CTRIE_VALUE_IS_PTR
+//#define CMAP_VALUE_IS_PTR
 
 // do not touch
-#define CTRIE_KEY_LENGTH sizeof KEY_CHARS 
+#define CMAP_KEY_LENGTH sizeof KEY_CHARS - 1
 
 
 // defines how a character is mapped to an array index
-// implementation in ctrie_config.c
+// implementation in cmap_config.c
 size_t c_idx(char* c);
 
-#endif // !__CTRIE_CONFIG_H__
+#endif // !__CMAP_CONFIG_H__

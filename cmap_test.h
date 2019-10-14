@@ -1,9 +1,9 @@
-#ifndef __CTRIE_TEST_H__
-#define __CTRIE_TEST_H__
+#ifndef __CMAP_TEST_H__
+#define __CMAP_TEST_H__
 
 #include <stdbool.h>
 
-#include "ctrie.h"
+#include "cmap.h"
 
 bool test_create_destroy();
 
@@ -25,4 +25,4 @@ bool test_iterate();
 
 
 
-#endif // __CTRIE_TEST_H__
+#endif // __CMAP_TEST_H__
