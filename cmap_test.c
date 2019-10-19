@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "cmap_test.h"
 
-// set value type at implementation
-typedef int cmap_value_t;
+
 
 //======= HELPERS ==============================
 

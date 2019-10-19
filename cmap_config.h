@@ -4,8 +4,8 @@
 // include desired character options for string keys
 static const char KEY_CHARS[] = "abcdefghijklmnopqrstuvwxyz";
 
-// define value type at implementation
-// e.g. typedef int cmap_value_t
+
+typedef int cmap_value_t;
 
 // define if value type is a pointer to enable proper memory cleanup
 //#define CMAP_VALUE_IS_PTR

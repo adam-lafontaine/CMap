@@ -3,11 +3,6 @@
 
 #include "cmap_config.h"
 
-// declare value type
-// define where implemented
-typedef cmap_value_t;
-
-struct cmap_t;
 typedef struct cmap_t cmap;
 
 typedef struct cmap_pair_t {
@@ -22,7 +17,7 @@ void cmap_destroy(cmap* map);
 
 void cmap_add(cmap* map, const char* key, const cmap_value_t value);
 
-cmap_value_t cmap_lookup(const cmap* map, const char* key);
+cmap_value_t cmap_lookup(const cmap* map, const char* key);  // should not use, use cmap_get instead
 
 void cmap_remove(cmap* map, const char* key);
 
