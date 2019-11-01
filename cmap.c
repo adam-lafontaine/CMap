@@ -257,14 +257,6 @@ void cmap_remove(cmap* map, const char* key) {
 	}
 }
 
-cmap_value_t cmap_lookup(const cmap* map, const char* key) {
-	ct_node* node = lookup_node(map->root, key);
-	if (node == NULL || node->pair == NULL)
-		return NULL;
-
-	return node->pair->value;
-}
-
 cmap_pair* cmap_get(cmap* map, const char* key) {
 	ct_node* node = lookup_node(map->root, key);
 	if (node == NULL)

@@ -36,28 +36,6 @@ bool test_create_destroy() {
 	return result;
 }
 
-bool test_add_lookup() {
-	puts("\ntest_add_lookup():");
-
-	cmap* map = cmap_create();
-
-	const char* key = "thisissomeletters";
-	cmap_value_t value = 42;
-
-	cmap_add(map, key, value);
-
-	cmap_value_t val = cmap_lookup(map, key);
-
-	bool result = true;
-	if (result &= (val == value))
-		print_sub("add and lookup ok\n", 1);
-	else
-		print_sub("add and lookup failed\n", 1);
-
-	cmap_destroy(map);
-	return result;
-}
-
 bool test_add() {
 	puts("\ntest_add():");
 	cmap* map = cmap_create();
@@ -75,10 +53,9 @@ bool test_add() {
 	cmap_add(map, invalid_key, 100);
 
 	bool valid_result = true;
-	cmap_value_t val;
 	for (size_t i = 0; i < 3; ++i) {
-		val = cmap_lookup(map, valid_keys[i]);
-		valid_result &= (val == valid_values[i]);
+		cmap_pair* pair = cmap_get(map, valid_keys[i]);
+		valid_result &= pair != NULL && (pair->value == valid_values[i]);
 	}		
 
 	if(valid_result)
@@ -86,14 +63,14 @@ bool test_add() {
 	else
 		print_sub("add valid failed\n", 1);
 
-	val = cmap_lookup(map, long_key);
-	bool long_result = val == long_value;
+	cmap_pair* pair = cmap_get(map, long_key);
+	bool long_result = pair->value == long_value;
 	if (long_result)
 		print_sub("add long key ok\n", 1);
 	else
 		print_sub("add long key failed\n", 1);
 
-	bool invalid_result = cmap_lookup(map, invalid_key) == NULL;
+	bool invalid_result = cmap_get(map, invalid_key) == NULL;
 	if (invalid_result)
 		print_sub("add invalid key ok\n", 1);
 	else
@@ -114,7 +91,7 @@ bool test_remove() {
 
 	bool add_result = true;
 	for (size_t i = 0; i < 3; ++i)
-		add_result &= (cmap_lookup(map, keys[i]) == values[i]);
+		add_result &= (cmap_get(map, keys[i])->value == values[i]);
 
 	if (add_result)
 		print_sub("add ok\n", 1);
@@ -126,7 +103,7 @@ bool test_remove() {
 
 	bool remove_result = true;
 	for (size_t i = 0; i < 3; ++i)
-		remove_result &= cmap_lookup(map, keys[i]) == NULL;
+		remove_result &= cmap_get(map, keys[i]) == NULL;
 
 	if (remove_result)
 		print_sub("remove ok\n", 1);
@@ -148,7 +125,7 @@ bool test_re_add() {
 
 	bool add_result = true;
 	for (size_t i = 0; i < 3; ++i)
-		add_result &= (cmap_lookup(map, keys[i]) == values[i]);
+		add_result &= (cmap_get(map, keys[i])->value == values[i]);
 
 	if (add_result)
 		print_sub("add ok\n", 1);
@@ -160,11 +137,7 @@ bool test_re_add() {
 
 	bool remove_result = true;
 	for (size_t i = 0; i < 3; ++i)
-		remove_result &= cmap_lookup(map, keys[i]) == NULL;
-
-	cmap_value_t val;
-	for (size_t i = 0; i < 3; ++i)
-		val = cmap_lookup(map, keys[i]);
+		remove_result &= cmap_get(map, keys[i]) == NULL;
 
 	if (remove_result)
 		print_sub("remove ok\n", 1);
@@ -176,7 +149,7 @@ bool test_re_add() {
 		cmap_add(map, keys[i], values[i]);
 
 	for (size_t i = 0; i < 3; ++i)
-		re_add_result &= (cmap_lookup(map, keys[i]) == values[i]);
+		re_add_result &= (cmap_get(map, keys[i])->value == values[i]);
 
 	if (re_add_result)
 		print_sub("re-add ok\n", 1);
@@ -198,7 +171,7 @@ bool test_get() {
 
 	bool add_result = true;
 	for (size_t i = 0; i < 3; ++i)
-		add_result &= (cmap_lookup(map, keys[i]) == values[i]);
+		add_result &= (cmap_get(map, keys[i])->value == values[i]);
 
 	if (add_result)
 		print_sub("add ok\n", 1);
@@ -295,23 +268,39 @@ bool test_get_next() {
 	cmap_add(map, key2, val2);
 
 	cmap_pair* first = cmap_get_first(map);
+	if (first == NULL) {
+		print_sub("first failed\n", 1);
+		return NULL;
+	}	
 	
 	cmap_pair* second = cmap_get_next(map, first->key);
-	bool res_1 = second != NULL && strcmp(second->key, key2) == 0 && second->value == val2;
-	if (res_1)
-		print_sub("first ok\n", 1);
-	else
-		print_sub("first failed\n", 1);
+	if (second == NULL) {
+		print_sub("second failed\n", 1);
+		return false;
+	}
 
 	cmap_pair* third = cmap_get_next(map, second->key);
+	if (third == NULL) {
+		print_sub("third failed\n", 1);
+		return false;
+	}
+
+	bool res_1 = strcmp(second->key, key2) == 0 && second->value == val2;
+	if (res_1)
+		print_sub("second key-value ok\n", 1);
+	else
+		print_sub("second key-value failed\n", 1);
+
+	
 	bool res_2 = third != NULL && strcmp(third->key, key3) == 0 && third->value == val3;
 	if (res_2)
-		print_sub("second ok\n", 1);
+		print_sub("third ok\n", 1);
 	else
-		print_sub("second failed\n", 1);
+		print_sub("third failed\n", 1);
 
+	
 	bool res_last = cmap_get_next(map, third->key) == NULL;
-	if (res_2)
+	if (res_last)
 		print_sub("last ok\n", 1);
 	else
 		print_sub("last failed\n", 1);

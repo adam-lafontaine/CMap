@@ -5,13 +5,13 @@
 static const char KEY_CHARS[] = "abcdefghijklmnopqrstuvwxyz";
 
 
-typedef int cmap_value_t;
+typedef double cmap_value_t;
 
 // define if value type is a pointer to enable proper memory cleanup
 //#define CMAP_VALUE_IS_PTR
 
 // do not touch
-#define CMAP_KEY_LENGTH sizeof KEY_CHARS - 1
+#define CMAP_KEY_LENGTH sizeof KEY_CHARS
 
 
 // defines how a character is mapped to an array index

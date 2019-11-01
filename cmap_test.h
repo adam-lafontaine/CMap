@@ -7,8 +7,6 @@
 
 bool test_create_destroy();
 
-bool test_add_lookup();
-
 bool test_add();
 
 bool test_remove();
