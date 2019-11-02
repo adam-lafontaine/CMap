@@ -29,7 +29,7 @@ typedef struct cmap_node_t {
 } ct_node;
 
 
-void clear_value(ct_node* node) {
+void clear_pair(ct_node* node) {
 #ifdef CMAP_VALUE_IS_PTR
 
 	if (node->value != NULL) {
@@ -174,6 +174,8 @@ bool is_valid_char(const char c) {
 
 struct cmap_t {
 	ct_node* root;
+
+	size_t node_count;
 };
 
 
@@ -188,6 +190,8 @@ cmap* cmap_create() {
 		free(map);
 		return NULL;
 	}
+
+	map->node_count = 0;
 
 	return map;
 }
@@ -235,15 +239,18 @@ void cmap_add(cmap* map, const char* key, const cmap_value_t value) {
 
 	node->pair = pair;
 	node->pair->key = (char*)key;
-	node->pair->value = value;	
+	node->pair->value = value;
+
+	++map->node_count;
 }
 
-void cmap_remove(cmap* map, const char* key) {
+// delete from map
+void cmap_erase(cmap* map, const char* key) {
 	ct_node* node = lookup_node(map->root, key);
 	if (node == NULL)
 		return;
 	
-	clear_value(node);
+	clear_pair(node);
 	
 	// cleanup
 	while (!is_root_node(node)) {
@@ -255,6 +262,33 @@ void cmap_remove(cmap* map, const char* key) {
 			node->child[child_id] = NULL;
 		}			
 	}
+
+	--map->node_count;
+}
+
+// remove from map and transfer ownership
+cmap_pair* cmap_remove(cmap* map, const char* key) {
+	ct_node* node = lookup_node(map->root, key);
+	if (node == NULL)
+		return NULL;
+
+	cmap_pair* pair = node->pair;
+
+	node->pair = NULL;
+
+	while (!is_root_node(node)) {
+		size_t child_id = node->id;
+		node = node->parent;
+
+		if (is_empty_node(node->child[child_id])) {
+			destroy_node(node->child[child_id]);
+			node->child[child_id] = NULL;
+		}
+	}
+
+	--map->node_count;
+
+	return pair;
 }
 
 cmap_pair* cmap_get(cmap* map, const char* key) {
@@ -284,4 +318,8 @@ cmap_pair* cmap_get_first(cmap* map) {
 		return NULL;
 
 	return node->pair;
+}
+
+bool cmap_empty(cmap* map) {
+	return map->node_count == 0;
 }

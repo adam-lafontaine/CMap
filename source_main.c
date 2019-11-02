@@ -6,7 +6,7 @@
 #include "win32_leak_check.h"
 #endif
 
-//#define TEST_FOR_LEAKS
+#define TEST_FOR_LEAKS
 
 #include "cmap_test.h"
 
@@ -32,12 +32,14 @@ int main(int argc, char** argv) {
 
 	str_result(results_buffer[0], "test_create_destroy()", test_create_destroy());
 	str_result(results_buffer[1], "test_add()", test_add());	
-	str_result(results_buffer[2], "test_remove()", test_remove());
+	str_result(results_buffer[2], "test_erase()", test_erase());
 	str_result(results_buffer[3], "test_re_add()", test_re_add());
 	str_result(results_buffer[4], "test_get()", test_get());
 	str_result(results_buffer[5], "test_get_first()", test_get_first());
 	str_result(results_buffer[6], "test_get_next()", test_get_next());
 	str_result(results_buffer[7], "test_iterate()", test_iterate());
+	str_result(results_buffer[8], "test_remove()", test_remove());
+	str_result(results_buffer[9], "test_empty()", test_empty());
 
 	unsigned width = 0;
 	unsigned w;
@@ -47,6 +49,7 @@ int main(int argc, char** argv) {
 		if (w > width)
 			width = w;
 	}
+	++width;
 
 	puts("\n\nTest Summary:\n");
 	for (size_t i = 0; i < num_tests; ++i) {

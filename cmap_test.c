@@ -80,8 +80,8 @@ bool test_add() {
 	return valid_result && long_result&& invalid_result;
 }
 
-bool test_remove() {
-	puts("\ntest_remove():");
+bool test_erase() {
+	puts("\ntest_erase():");
 	cmap* map = cmap_create();
 
 	const char* keys[] = { "wabce", "xyzt", "lmopq" };
@@ -99,19 +99,19 @@ bool test_remove() {
 		print_sub("add failed\n", 1);
 
 	for (size_t i = 0; i < 3; ++i)
-		cmap_remove(map, keys[i]);
+		cmap_erase(map, keys[i]);
 
-	bool remove_result = true;
+	bool erase_result = true;
 	for (size_t i = 0; i < 3; ++i)
-		remove_result &= cmap_get(map, keys[i]) == NULL;
+		erase_result &= cmap_get(map, keys[i]) == NULL;
 
-	if (remove_result)
-		print_sub("remove ok\n", 1);
+	if (erase_result)
+		print_sub("erase ok\n", 1);
 	else
-		print_sub("remove failed\n", 1);
+		print_sub("erase failed\n", 1);
 
 	cmap_destroy(map);
-	return add_result & remove_result;
+	return add_result && erase_result;
 }
 
 bool test_re_add() {
@@ -133,16 +133,16 @@ bool test_re_add() {
 		print_sub("add failed\n", 1);
 
 	for (size_t i = 0; i < 3; ++i)
-		cmap_remove(map, keys[i]);
+		cmap_erase(map, keys[i]);
 
-	bool remove_result = true;
+	bool erase_result = true;
 	for (size_t i = 0; i < 3; ++i)
-		remove_result &= cmap_get(map, keys[i]) == NULL;
+		erase_result &= cmap_get(map, keys[i]) == NULL;
 
-	if (remove_result)
-		print_sub("remove ok\n", 1);
+	if (erase_result)
+		print_sub("erase ok\n", 1);
 	else
-		print_sub("remove failed\n", 1);
+		print_sub("erase failed\n", 1);
 
 	bool re_add_result = true;
 	for (size_t i = 0; i < 3; ++i)
@@ -157,7 +157,7 @@ bool test_re_add() {
 		print_sub("re-add failed\n", 1);
 
 	cmap_destroy(map);
-	return add_result & remove_result && re_add_result;
+	return add_result & erase_result && re_add_result;
 }
 
 bool test_get() {
@@ -230,21 +230,21 @@ bool test_get_first() {
 	else
 		print_sub("first failed\n", 1);
 
-	cmap_remove(map, key1);
+	cmap_erase(map, key1);
 	pair = cmap_get_first(map);
-	bool remove_res = pair != NULL && strcmp(pair->key, key2) == 0 && pair->value == val2;
-	if (remove_res)
-		print_sub("remove ok\n", 1);
+	bool erase_res = pair != NULL && strcmp(pair->key, key2) == 0 && pair->value == val2;
+	if (erase_res)
+		print_sub("erase ok\n", 1);
 	else
-		print_sub("remove failed\n", 1);
+		print_sub("erase failed\n", 1);
 
-	cmap_remove(map, key2);
-	cmap_remove(map, key3);
-	bool remove_all_res = cmap_get_first(map) == NULL;
-	if (remove_all_res)
-		print_sub("remove all ok\n", 1);
+	cmap_erase(map, key2);
+	cmap_erase(map, key3);
+	bool erase_all_res = cmap_get_first(map) == NULL;
+	if (erase_all_res)
+		print_sub("erase all ok\n", 1);
 	else
-		print_sub("remove all failed\n", 1);
+		print_sub("erase all failed\n", 1);
 
 	cmap_destroy(map);
 	return empty_res && first_res;
@@ -305,24 +305,24 @@ bool test_get_next() {
 	else
 		print_sub("last failed\n", 1);
 
-	cmap_remove(map, key2);
+	cmap_erase(map, key2);
 	cmap_pair* new_second = cmap_get_next(map, first->key);
-	bool res_remove = new_second != NULL && strcmp(new_second->key, key3) == 0 && new_second->value == val3;
-	if (res_remove)
-		print_sub("remove ok\n", 1);
+	bool res_erase = new_second != NULL && strcmp(new_second->key, key3) == 0 && new_second->value == val3;
+	if (res_erase)
+		print_sub("erase ok\n", 1);
 	else
-		print_sub("remove failed\n", 1);
+		print_sub("erase failed\n", 1);
 
-	cmap_remove(map, key1);
-	cmap_remove(map, key3);
+	cmap_erase(map, key1);
+	cmap_erase(map, key3);
 	bool res_all = cmap_get_next(map, key1) == NULL;
 	if (res_all)
-		print_sub("remove all ok\n", 1);
+		print_sub("erase all ok\n", 1);
 	else
-		print_sub("remove all failed\n", 1);
+		print_sub("erase all failed\n", 1);
 
 	cmap_destroy(map);
-	return res_1 && res_2 && res_last && res_remove && res_all;
+	return res_1 && res_2 && res_last && res_erase && res_all;
 }
 
 
@@ -359,6 +359,109 @@ bool test_iterate() {
 
 	cmap_destroy(map);
 	return key_result && val_result;
+}
+
+bool test_remove() {
+	puts("\ntest_remove():");
+	cmap* map = cmap_create();
+
+	const char* keys[] = { "wabce", "xyzt", "lmopq" };
+	const cmap_value_t values[] = { 25, -5, 36 };
+	size_t num_ele = 3;
+
+	for (size_t i = 0; i < num_ele; ++i)
+		cmap_add(map, keys[i], values[i]);
+
+	bool add_result = true;
+	for (size_t i = 0; i < num_ele; ++i)
+		add_result &= (cmap_get(map, keys[i])->value == values[i]);
+
+	if (add_result)
+		print_sub("add ok\n", 1);
+	else
+		print_sub("add failed\n", 1);
+
+	bool remove_result = true;
+	bool erase_result = true;
+	for (size_t i = 0; i < num_ele; ++i) {
+		cmap_pair* pair = cmap_remove(map, keys[i]);
+		remove_result &= pair != NULL && strcmp(pair->key, keys[i]) == 0 && pair->value == values[i];
+		erase_result &= cmap_get(map, keys[i]) == NULL;
+
+		free(pair); // only if pair has no pointer
+	}
+		
+
+	if (remove_result)
+		print_sub("remove ok\n", 1);
+	else
+		print_sub("remove failed\n", 1);
+
+	if (erase_result)
+		print_sub("erase ok\n", 1);
+	else
+		print_sub("erase failed\n", 1);
+
+	cmap_destroy(map);
+	return add_result && remove_result && erase_result;
+}
+
+bool test_empty() {
+	puts("\ntest_empty():");
+	cmap* map = cmap_create();
+
+	bool create_result = cmap_empty(map);
+
+	if (create_result)
+		print_sub("create ok\n", 1);
+	else
+		print_sub("create failed\n", 1);
+
+	size_t num_ele = 3;
+	const char* keys[] = { "wabce", "xyzt", "lmopq" };
+	const cmap_value_t values[] = { 25, -5, 36 };
+
+	bool add_result = true;
+	for (size_t i = 0; i < num_ele; ++i) {
+		cmap_add(map, keys[i], values[i]);
+		add_result &= !cmap_empty(map);
+	}
+		
+	if (add_result)
+		print_sub("add ok\n", 1);
+	else
+		print_sub("add failed\n", 1);
+	
+	bool erase_result = true;
+	for (size_t i = 0; i < num_ele; ++i) {
+		erase_result &= !cmap_empty(map);
+		cmap_erase(map, keys[i]);
+	}
+	erase_result &= cmap_empty(map);
+
+	if (erase_result)
+		print_sub("erase ok\n", 1);
+	else
+		print_sub("erase failed\n", 1);
+
+	for (size_t i = 0; i < num_ele; ++i)
+		cmap_add(map, keys[i], values[i]);
+
+	bool remove_result = true;
+	for (size_t i = 0; i < num_ele; ++i) {
+		remove_result &= !cmap_empty(map);
+		cmap_pair* pair = cmap_remove(map, keys[i]);
+		free(pair);
+	}
+	remove_result &= cmap_empty(map);
+
+	if (remove_result)
+		print_sub("remove ok\n", 1);
+	else
+		print_sub("remove failed\n", 1);
+
+	cmap_destroy(map);
+	return create_result && add_result && erase_result && remove_result;
 }
 
 /*
