@@ -9,13 +9,14 @@
 struct cmap_node_t;
 typedef struct cmap_node_t ct_node;
 
-cmap_pair* create_pair(cmap* map, const char* key) {	
+cmap_pair* create_pair(const char* key, const cmap_value_t value) {
 
 	cmap_pair* pair = (cmap_pair*)malloc(sizeof(cmap_pair));
 	if (pair == NULL)
 		return NULL;
 
 	pair->key = (char*)key;
+	pair->value = value;
 
 	return pair;
 }
@@ -175,7 +176,7 @@ bool is_valid_char(const char c) {
 struct cmap_t {
 	ct_node* root;
 
-	size_t node_count;
+	size_t size;
 };
 
 
@@ -191,7 +192,7 @@ cmap* cmap_create() {
 		return NULL;
 	}
 
-	map->node_count = 0;
+	map->size = 0;
 
 	return map;
 }
@@ -232,16 +233,14 @@ void cmap_add(cmap* map, const char* key, const cmap_value_t value) {
 	if (node == NULL)
 		return;
 
-	cmap_pair* pair = (cmap_pair*)malloc(sizeof(cmap_pair));
+	cmap_pair* pair = create_pair(key, value);
 	if (pair == NULL) {
 		return;
 	}	
 
 	node->pair = pair;
-	node->pair->key = (char*)key;
-	node->pair->value = value;
 
-	++map->node_count;
+	++map->size;
 }
 
 // delete from map
@@ -263,7 +262,7 @@ void cmap_erase(cmap* map, const char* key) {
 		}			
 	}
 
-	--map->node_count;
+	--map->size;
 }
 
 // remove from map and transfer ownership
@@ -286,7 +285,7 @@ cmap_pair* cmap_remove(cmap* map, const char* key) {
 		}
 	}
 
-	--map->node_count;
+	--map->size;
 
 	return pair;
 }
@@ -321,5 +320,5 @@ cmap_pair* cmap_get_first(cmap* map) {
 }
 
 bool cmap_empty(cmap* map) {
-	return map->node_count == 0;
+	return map->size == 0;
 }
