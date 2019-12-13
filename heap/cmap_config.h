@@ -1,5 +1,5 @@
-#ifndef __CMAP_CONFIG_H__
-#define __CMAP_CONFIG_H__
+#ifndef CMAP_CONFIG_HEAP_H__
+#define CMAP_CONFIG_HEAP_H__
 
 // include desired character options for string keys
 static const char KEY_CHARS[] = "abcdefghijklmnopqrstuvwxyz";

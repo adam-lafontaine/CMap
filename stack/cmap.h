@@ -1,5 +1,5 @@
-#ifndef __CMAP_H__
-#define __CMAP_H__
+#ifndef CMAP_STACK_H__
+#define CMAP_STACK_H__
 
 #include "cmap_config.h"
 
@@ -11,7 +11,7 @@ typedef struct cmap_pair_t {
 } cmap_pair;
 
 
-cmap* cmap_create();
+cmap cmap_create();
 
 void cmap_destroy(cmap* map);
 
@@ -29,7 +29,4 @@ cmap_pair* cmap_get_next(cmap* map, const char* key);
 
 bool cmap_empty(cmap* map);
 
-
-
-#endif // !__CMAP_H__
-
+#endif

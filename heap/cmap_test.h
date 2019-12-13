@@ -1,5 +1,5 @@
-#ifndef __CMAP_TEST_H__
-#define __CMAP_TEST_H__
+#ifndef CMAP_TEST_H__
+#define CMAP_TEST_H__
 
 #include <stdbool.h>
 
